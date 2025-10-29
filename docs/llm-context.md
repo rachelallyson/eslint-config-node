@@ -1,0 +1,102 @@
+# LLM Context Map
+
+**Purpose**: Help AI assistants answer questions about this package with minimal file reads.
+
+## Start Here
+
+- **Entry point**: [docs/index.md](./index.md)
+- **Core concepts**: [docs/concepts.md](./concepts.md)
+- **API surface**: [index.js](../index.js) - main exports
+- **Config reference**: [docs/reference/config.md](./reference/config.md)
+
+## Package Identity
+
+- **Name**: `@rachelallyson/eslint-config-node`
+- **Type**: ESLint configuration package (ES modules)
+- **Main entry**: `index.js`
+- **No build step**: Files consumed directly
+
+## Invariants
+
+- All configs return arrays (ESLint flat config format)
+- Configs must be spread (`...configName`) when composing
+- TypeScript config uses `projectService: true` - reads project's tsconfig.json automatically
+- GraphQL config requires schema URL (default: `http://localhost:4000/graphql`)
+- Prettier config requires `prettier` peer dependency when used
+
+## Public Surface
+
+### Named Exports (from index.js)
+
+- `baseConfig` - Core rules, sorting, formatting
+- `importConfig` - Import sorting and unused import detection
+- `securityConfig` - Security and Node.js best practices
+- `graphqlConfig` - GraphQL linting
+- `prettierConfig` - Prettier integration
+- `tsConfig` - TypeScript linting
+
+### Default Export
+
+- Default export combines all configs in order: base → import → security → graphql → prettier → ts
+
+### Deep Imports
+
+- `@rachelallyson/eslint-config-node/base`
+- `@rachelallyson/eslint-config-node/import`
+- `@rachelallyson/eslint-config-node/security`
+- `@rachelallyson/eslint-config-node/graphql`
+- `@rachelallyson/eslint-config-node/prettier`
+- `@rachelallyson/eslint-config-node/ts`
+
+### Additional Exports
+
+- `tsconfig.json` - Shareable TypeScript config (extends via `"extends": "@rachelallyson/eslint-config-node/tsconfig.json"`)
+
+## Peer Dependencies
+
+- `eslint >= 9` (required)
+- `typescript >= 4.8.4 < 6.0.0` (optional, only needed for tsConfig)
+
+## Common Tasks
+
+- **Quick setup**: [docs/guides/quickstart.md](./guides/quickstart.md)
+- **Rule overrides**: [docs/guides/custom-rules.md](./guides/custom-rules.md)
+- **Error debugging**: [docs/troubleshooting.md](./troubleshooting.md)
+
+## Don'ts
+
+- Don't deep import from `configs/` - use named exports or deep imports defined in package.json `exports`
+- Don't modify configs directly - spread and override instead
+- Don't assume TypeScript is required - tsConfig is optional
+- Don't use CommonJS `require()` - package uses ES modules only
+
+## File Structure
+
+```
+index.js              # Main exports
+configs/
+  base.js            # baseConfig
+  import.js          # importConfig
+  security.js        # securityConfig
+  graphql.js         # graphqlConfig
+  prettier.js        # prettierConfig
+  ts.js              # tsConfig
+tsconfig.json        # Shareable TS config
+```
+
+## Configuration Override Pattern
+
+Users override rules by spreading configs and adding new objects:
+
+```javascript
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...baseConfig,
+  {
+    rules: {
+      "no-console": "error", // Override or add rules
+    },
+  },
+];
+```

@@ -1,0 +1,252 @@
+# Error Handling
+
+Understanding ESLint errors, rule overrides, and how to debug configuration issues.
+
+## Understanding ESLint Errors
+
+### Error Levels
+
+ESLint rules can be set to:
+
+- `"off"` or `0` - Disable rule
+- `"warn"` or `1` - Warning (doesn't fail lint)
+- `"error"` or `2` - Error (fails lint)
+
+### Error Format
+
+```
+/path/to/file.js
+  1:5  error  'unused' is assigned a value but never used  no-unused-vars
+  5:2  warn   Unexpected console statement                no-console
+```
+
+- `1:5` = Line 1, Column 5
+- `error` = Severity level
+- Message = Rule description
+- Last part = Rule name
+
+## Configuration Errors
+
+### Import Errors
+
+**Symptom**: `Cannot find module '@rachelallyson/eslint-config-node'`
+
+**Cause**: Package not installed or wrong package name
+
+**Fix**:
+
+```bash
+npm install --save-dev @rachelallyson/eslint-config-node
+```
+
+**Symptom**: `SyntaxError: The requested module does not provide an export named 'baseConfig'`
+
+**Cause**: Using CommonJS `require()` instead of ES modules
+
+**Fix**: Use ES module import:
+
+```javascript
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+```
+
+### Peer Dependency Errors
+
+**Symptom**: `Missing peer dependency: eslint@>=9`
+
+**Cause**: ESLint not installed or version too old
+
+**Fix**:
+
+```bash
+npm install --save-dev eslint@^9.0.0
+```
+
+**Symptom**: TypeScript config fails with "Cannot find module 'typescript-eslint'"
+
+**Cause**: Missing TypeScript peer dependency (optional but needed for tsConfig)
+
+**Fix**:
+
+```bash
+npm install --save-dev typescript@^5.0.0
+```
+
+### Plugin Errors
+
+**Symptom**: `Error: Failed to load plugin 'prettier'`
+
+**Cause**: Missing peer dependency for prettier config
+
+**Fix**:
+
+```bash
+npm install --save-dev prettier eslint-plugin-prettier
+```
+
+## Rule Override Strategies
+
+### Override Single Rule
+
+```javascript
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...baseConfig,
+  {
+    rules: {
+      "no-console": "off",  // Override baseConfig's setting
+    },
+  },
+];
+```
+
+### Override for Specific Files
+
+```javascript
+export default [
+  ...baseConfig,
+  {
+    files: ["**/*.test.js"],
+    rules: {
+      "no-console": "off",  // Only applies to test files
+    },
+  },
+];
+```
+
+### Turn Off Rule Entirely
+
+```javascript
+export default [
+  ...baseConfig,
+  {
+    rules: {
+      "sort-keys-fix/sort-keys-fix": "off",
+    },
+  },
+];
+```
+
+## Debugging Configuration
+
+### Check Active Rules
+
+Run ESLint with debug output:
+
+```bash
+DEBUG=eslint:cli-engine npx eslint .
+```
+
+### Validate Config Syntax
+
+ESLint will fail fast if config syntax is invalid:
+
+```bash
+npx eslint --print-config . | head -20
+```
+
+### Isolate Problem Configs
+
+Start minimal and add configs one by one:
+
+```javascript
+// Start here
+export default [...baseConfig];
+
+// Then add
+export default [...baseConfig, ...importConfig];
+
+// Continue until you find the problematic config
+```
+
+## Common Rule Conflicts
+
+### Prettier + Other Formatters
+
+If using `prettierConfig`, ensure no conflicting formatting rules:
+
+```javascript
+import { baseConfig, prettierConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...baseConfig,
+  ...prettierConfig,  // Must come after baseConfig to override formatting rules
+];
+```
+
+### TypeScript Rules on JavaScript
+
+The `tsConfig` automatically disables TypeScript rules for `.js` files, but you can be explicit:
+
+```javascript
+export default [
+  ...tsConfig,
+  {
+    files: ["**/*.js"],
+    rules: {
+      "@typescript-eslint/no-unused-vars": "off",
+    },
+  },
+];
+```
+
+## Edge Cases
+
+### GraphQL Schema Not Found
+
+**Symptom**: GraphQL linting errors with "Schema not found"
+
+**Cause**: Default schema URL (`http://localhost:4000/graphql`) not accessible
+
+**Fix**: Override schema in config:
+
+```javascript
+import { graphqlConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...graphqlConfig,
+  {
+    files: ["**/*.graphql"],
+    languageOptions: {
+      parserOptions: {
+        schema: "./schema.graphql",  // Use local file
+      },
+    },
+  },
+];
+```
+
+### TypeScript Project Service Issues
+
+**Symptom**: TypeScript rules not applying
+
+**Cause**: `tsconfig.json` not found or invalid
+
+**Fix**:
+
+1. Ensure `tsconfig.json` exists in project root
+2. Run ESLint from project root (not subdirectories)
+3. Check `tsconfig.json` syntax is valid
+
+### Import Sorting Conflicts
+
+If `importConfig` conflicts with other import plugins:
+
+```javascript
+// Disable conflicting rules
+export default [
+  ...importConfig,
+  {
+    rules: {
+      "import/order": "off",  // simple-import-sort handles this
+    },
+  },
+];
+```
+
+## Getting Help
+
+1. Check [troubleshooting.md](../troubleshooting.md) for specific errors
+2. Verify ESLint version: `npx eslint --version` (must be >= 9)
+3. Check peer dependencies: `npm ls eslint typescript prettier`
+4. Review active config: `npx eslint --print-config path/to/file.js`

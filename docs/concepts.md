@@ -1,0 +1,209 @@
+# Core Concepts
+
+## Mental Model
+
+This package provides **modular ESLint configuration arrays** that can be composed together. Each config is self-contained and follows ESLint 9+ flat config format.
+
+## Configuration Composition
+
+### What Are Configs?
+
+Each exported config (e.g., `baseConfig`, `tsConfig`) is an **array of ESLint configuration objects**. When you spread them, ESLint merges them in order.
+
+```javascript
+export default [
+  ...baseConfig,    // Array spread → merges configurations
+  ...tsConfig,      // Later configs override earlier ones
+];
+```
+
+### Order Matters
+
+Configs are applied in the order you spread them. Later rules override earlier ones:
+
+```javascript
+export default [
+  ...baseConfig,     // Sets "no-console": "off"
+  {
+    rules: {
+      "no-console": "error",  // Overrides baseConfig
+    },
+  },
+];
+```
+
+## Config Lifecycle
+
+1. **Import** - User imports config(s) from package
+2. **Spread** - User spreads config(s) into their ESLint config array
+3. **Merge** - ESLint merges all config objects in order
+4. **Apply** - ESLint applies final merged config to files
+
+## Data Model
+
+### Config Object Structure
+
+Each config array contains objects matching ESLint flat config:
+
+```typescript
+type Config = Array<{
+  files?: string[];           // File globs (e.g., ["**/*.ts"])
+  ignores?: string[];          // Ignore patterns
+  languageOptions?: {...};     // Parser settings
+  plugins?: {...};             // Plugin registrations
+  rules?: {...};               // Rule definitions
+}>;
+```
+
+### Example: baseConfig Structure
+
+```javascript
+[
+  { ignores: ["node_modules/**", "dist/**"] },
+  eslint.configs.recommended,
+  {
+    languageOptions: { parserOptions: {...} },
+    plugins: { "sort-destructure-keys": ... },
+    rules: { "prefer-template": "error" },
+  },
+]
+```
+
+## TypeScript Integration
+
+### Automatic tsconfig.json Discovery
+
+The `tsConfig` uses `projectService: true`, which:
+
+1. Automatically discovers the project's `tsconfig.json` starting from where ESLint runs
+2. No need to specify `tsconfigRootDir` - it finds the root project's config
+3. Respects all project TypeScript settings (paths, compiler options, etc.)
+
+**Invariant**: TypeScript config always reads from the consuming project's root, never from the package directory.
+
+### TypeScript Peer Dependency
+
+- **Optional**: TypeScript is only required if using `tsConfig`
+- If TypeScript isn't installed, `tsConfig` will fail to load
+- Always specify TypeScript as an optional peer dependency
+
+## Config Dependencies
+
+### Dependency Graph
+
+```
+baseConfig
+  └── No dependencies (core ESLint only)
+
+importConfig
+  └── Requires: eslint-plugin-import, simple-import-sort, unused-imports
+
+securityConfig
+  └── Requires: eslint-plugin-n, eslint-plugin-security
+
+graphqlConfig
+  └── Requires: @eslint/compat, @graphql-eslint/eslint-plugin
+
+prettierConfig
+  └── Requires: eslint-plugin-prettier, eslint-config-prettier, prettier (peer)
+
+tsConfig
+  └── Requires: typescript-eslint, typescript (optional peer)
+```
+
+### Optional Dependencies
+
+- `prettier` - Only needed if using `prettierConfig`
+- `typescript` - Only needed if using `tsConfig`
+
+All other dependencies are bundled in the package.
+
+## File Matching
+
+### File Patterns
+
+Each config applies to specific file patterns:
+
+- `baseConfig`: All files (no `files` restriction)
+- `importConfig`: `**/*.{js,ts}`
+- `securityConfig`: `**/*.{js,ts}`
+- `prettierConfig`: `**/*.{js,ts}`
+- `graphqlConfig`: `**/*.graphql`
+- `tsConfig`: TypeScript files only (via typescript-eslint auto-detection)
+
+### Ignore Patterns
+
+`baseConfig` includes default ignores:
+
+- `node_modules/**`
+- `dist/**`
+
+Users can override by adding their own `ignores` objects.
+
+## Error Handling
+
+ESLint configuration errors surface during:
+
+1. **Import time** - Syntax errors, missing peer dependencies
+2. **Runtime** - Invalid rule options, plugin loading failures
+
+See [error-handling guide](./guides/error-handling.md) for details.
+
+## Extensibility Patterns
+
+### Override Rules
+
+```javascript
+export default [
+  ...baseConfig,
+  { rules: { "no-console": "error" } },
+];
+```
+
+### Add Custom Rules
+
+```javascript
+export default [
+  ...baseConfig,
+  {
+    plugins: { custom: myPlugin },
+    rules: { "custom/rule": "warn" },
+  },
+];
+```
+
+### File-Specific Configs
+
+```javascript
+export default [
+  ...baseConfig,
+  {
+    files: ["**/*.test.js"],
+    rules: { "no-console": "off" },
+  },
+];
+```
+
+## GraphQL Schema Configuration
+
+The `graphqlConfig` expects a GraphQL schema. By default, it points to:
+
+- `schema: "http://localhost:4000/graphql"`
+
+**Users must override** this in their config:
+
+```javascript
+import { graphqlConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...graphqlConfig,
+  {
+    files: ["**/*.graphql"],
+    languageOptions: {
+      parserOptions: {
+        schema: "./schema.graphql",  // Override default
+      },
+    },
+  },
+];
+```

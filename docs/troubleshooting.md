@@ -1,0 +1,336 @@
+# Troubleshooting
+
+Common errors and their fixes.
+
+## Installation Issues
+
+### Cannot find module '@rachelallyson/eslint-config-node'
+
+**Symptom**:
+
+```
+Error: Cannot find module '@rachelallyson/eslint-config-node'
+```
+
+**Cause**: Package not installed or wrong package name
+
+**Fix**:
+
+```bash
+npm install --save-dev @rachelallyson/eslint-config-node
+```
+
+Verify in `package.json`:
+
+```json
+{
+  "devDependencies": {
+    "@rachelallyson/eslint-config-node": "^1.0.0"
+  }
+}
+```
+
+---
+
+### SyntaxError: The requested module does not provide an export named 'baseConfig'
+
+**Symptom**:
+
+```
+SyntaxError: The requested module '@rachelallyson/eslint-config-node' does not provide an export named 'baseConfig'
+```
+
+**Cause**: Using CommonJS `require()` instead of ES module `import`
+
+**Fix**: Use ES modules:
+
+```javascript
+// ❌ Wrong
+const { baseConfig } = require("@rachelallyson/eslint-config-node");
+
+// ✅ Correct
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+```
+
+Ensure your file is `.mjs` or your `package.json` has `"type": "module"`.
+
+---
+
+## Peer Dependency Errors
+
+### Missing peer dependency: eslint@>=9
+
+**Symptom**:
+
+```text
+npm WARN @rachelallyson/eslint-config-node@1.0.0 requires a peer of eslint@>=9 but none is installed.
+```
+
+**Cause**: ESLint not installed or version too old
+
+**Fix**:
+
+```bash
+npm install --save-dev eslint@^9.0.0
+```
+
+Verify version:
+
+```bash
+npx eslint --version
+# Should show 9.x.x or higher
+```
+
+---
+
+### TypeScript config fails after installing
+
+**Symptom**: TypeScript linting errors with "Cannot find module 'typescript-eslint'"
+
+**Cause**: Missing TypeScript peer dependency
+
+**Fix**:
+
+```bash
+npm install --save-dev typescript@^5.0.0
+```
+
+TypeScript is optional but required for `tsConfig`.
+
+---
+
+### Prettier config fails to load
+
+**Symptom**:
+
+```
+Error: Failed to load plugin 'prettier' declared in '.eslintrc.js': Cannot find module 'eslint-plugin-prettier'
+```
+
+**Cause**: Missing Prettier or related packages
+
+**Fix**:
+
+```bash
+npm install --save-dev prettier eslint-plugin-prettier eslint-config-prettier
+```
+
+---
+
+## Configuration Errors
+
+### ESLint configuration is invalid
+
+**Symptom**:
+
+```
+Error: ESLint configuration is invalid
+```
+
+**Cause**: Config file syntax error or wrong format
+
+**Fix**: Check your `eslint.config.mjs`:
+
+```javascript
+// ✅ Valid - array export
+export default [...baseConfig];
+
+// ❌ Invalid - object export (old format)
+module.exports = { extends: ["..."], rules: {} };
+```
+
+Ensure you're using ESLint 9+ flat config format.
+
+---
+
+### TypeScript rules not applying
+
+**Symptom**: TypeScript files lint but TS-specific rules don't trigger
+
+**Cause**: `tsconfig.json` not found or invalid
+
+**Fix**:
+
+1. Ensure `tsconfig.json` exists in project root
+2. Verify JSON syntax is valid: `npx tsc --showConfig`
+3. Run ESLint from project root (not subdirectories)
+
+Check tsconfig location:
+
+```bash
+# From project root
+cat tsconfig.json | head -5
+```
+
+---
+
+## Rule Conflicts
+
+### Prettier conflicts with other formatters
+
+**Symptom**: Formatting rules conflict, causing many errors
+
+**Cause**: Multiple formatting tools enabled
+
+**Fix**: Ensure `prettierConfig` comes after other configs:
+
+```javascript
+export default [
+  ...baseConfig,
+  ...importConfig,
+  ...prettierConfig,  // Must be last to override formatting rules
+];
+```
+
+Also ensure `eslint-config-prettier` is included (it's part of `prettierConfig`).
+
+---
+
+### Import sorting conflicts with other plugins
+
+**Symptom**: Multiple import sorting rules conflict
+
+**Cause**: `importConfig` uses `simple-import-sort`, but another plugin also handles imports
+
+**Fix**: Disable conflicting rules:
+
+```javascript
+export default [
+  ...baseConfig,
+  ...importConfig,
+  {
+    rules: {
+      "import/order": "off",  // Let simple-import-sort handle it
+    },
+  },
+];
+```
+
+---
+
+## GraphQL Specific
+
+### GraphQL schema not found
+
+**Symptom**: GraphQL linting errors with "Schema not found" or "Cannot reach schema"
+
+**Cause**: Default schema URL (`http://localhost:4000/graphql`) not accessible
+
+**Fix**: Override schema in your config:
+
+```javascript
+import { graphqlConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...graphqlConfig,
+  {
+    files: ["**/*.graphql"],
+    languageOptions: {
+      parserOptions: {
+        schema: "./schema.graphql",  // Use local file
+        // OR
+        schema: "https://api.example.com/graphql",  // Use remote URL
+      },
+    },
+  },
+];
+```
+
+---
+
+## Runtime Errors
+
+### "Cannot read property 'rules' of undefined"
+
+**Symptom**: Error when spreading configs
+
+**Cause**: Config export is undefined (wrong import or package issue)
+
+**Fix**: Verify import:
+
+```javascript
+// Debug: check what's exported
+import * as configs from "@rachelallyson/eslint-config-node";
+console.log(Object.keys(configs));  // Should show: baseConfig, tsConfig, etc.
+
+// Then use properly
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+```
+
+---
+
+### ESLint runs but no rules are applied
+
+**Symptom**: ESLint executes but doesn't report any violations
+
+**Cause**: Config not applied correctly or files not matched
+
+**Fix**: Check active config:
+
+```bash
+npx eslint --print-config src/index.js
+```
+
+Verify:
+
+1. Config includes rules (not just empty objects)
+2. File patterns match your files
+3. No `ignores` patterns excluding your files
+
+---
+
+## Performance Issues
+
+### ESLint is very slow
+
+**Symptom**: Linting takes minutes
+
+**Cause**: TypeScript project service scanning too many files
+
+**Fix**: Restrict TypeScript config:
+
+```javascript
+export default [
+  ...tsConfig,
+  {
+    files: ["src/**/*.ts"],  // Limit to specific directory
+    // OR
+    ignores: ["**/*.test.ts", "dist/**"],
+  },
+];
+```
+
+---
+
+## Getting More Help
+
+1. **Check active configuration**:
+
+   ```bash
+   npx eslint --print-config path/to/file.js > config.json
+   ```
+
+2. **Enable debug output**:
+
+   ```bash
+   DEBUG=eslint:cli-engine npx eslint .
+   ```
+
+3. **Verify versions**:
+
+   ```bash
+   npm ls eslint typescript prettier @rachelallyson/eslint-config-node
+   ```
+
+4. **Minimal reproduction**:
+   - Start with just `baseConfig`
+   - Add configs one by one
+   - Identify which config causes the issue
+
+5. **Check ESLint compatibility**:
+
+   ```bash
+   npx eslint --version  # Must be >= 9.0.0
+   ```
+
+If issues persist, check the [error-handling guide](./guides/error-handling.md) for detailed debugging steps.

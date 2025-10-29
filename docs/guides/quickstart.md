@@ -1,0 +1,138 @@
+# Quickstart Guide
+
+Get `@rachelallyson/eslint-config-node` running in 5 minutes.
+
+## Prerequisites
+
+- Node.js (any LTS version)
+- ESLint >= 9
+
+## Installation
+
+```bash
+npm install --save-dev @rachelallyson/eslint-config-node eslint
+```
+
+If using TypeScript:
+
+```bash
+npm install --save-dev typescript
+```
+
+## Basic Setup
+
+### 1. Create ESLint Config
+
+Create `eslint.config.mjs` in your project root:
+
+```javascript
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+
+export default [...baseConfig];
+```
+
+### 2. Test It
+
+Run ESLint:
+
+```bash
+npx eslint .
+```
+
+You should see linting output (or no errors if your code is clean).
+
+## Common Setups
+
+### JavaScript Only
+
+```javascript
+import { baseConfig, importConfig, prettierConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...baseConfig,
+  ...importConfig,
+  ...prettierConfig,
+];
+```
+
+### TypeScript Project
+
+```javascript
+import { baseConfig, importConfig, tsConfig } from "@rachelallyson/eslint-config-node";
+
+export default [
+  ...baseConfig,
+  ...importConfig,
+  ...tsConfig,
+];
+```
+
+### Full Stack (All Configs)
+
+```javascript
+import config from "@rachelallyson/eslint-config-node";
+
+export default config;
+```
+
+## TypeScript Configuration (Optional)
+
+Extend the included TypeScript config in your `tsconfig.json`:
+
+```json
+{
+  "extends": "@rachelallyson/eslint-config-node/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*"]
+}
+```
+
+## Verify Installation
+
+### Expected Output
+
+After setup, running `npx eslint src/index.js` should:
+
+- Parse your code
+- Report any linting violations
+- Exit with code 0 (success) or 1 (errors found)
+
+### Common First-Time Issues
+
+**Error: "Cannot find module '@rachelallyson/eslint-config-node'"**
+
+- Run `npm install` again
+- Check `package.json` has the dependency
+
+**Error: "ESLint configuration is invalid"**
+
+- Ensure you're using ESLint 9+
+- Check `eslint.config.mjs` syntax (must be ES modules)
+
+**Error: "Peer dependency ESLint not installed"**
+
+- Run `npm install --save-dev eslint`
+
+See [troubleshooting.md](../troubleshooting.md) for more.
+
+## Next Steps
+
+- [Override specific rules](../guides/custom-rules.md)
+- [Add project-specific configs](../recipes/examples.md)
+- [Configure Prettier integration](../recipes/examples.md#prettier-setup)
+
+## Package Scripts
+
+Add to your `package.json`:
+
+```json
+{
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}
+```
