@@ -1,0 +1,88 @@
+# Documentation Index
+
+Welcome to `@rachelallyson/eslint-config-node` documentation. This package provides modular ESLint configurations for Node.js projects.
+
+## Quick Links
+
+- **[Start Here](#start-here)** - Get up and running in 5 minutes
+- **[Core Concepts](./concepts.mdx)** - Understanding the package architecture
+- **[API Reference](./api/README.mdx)** - Complete API surface
+- **[Configuration Reference](./reference/config.mdx)** - All configuration options
+
+## Start Here
+
+### Installation
+
+```bash
+npm install @rachelallyson/eslint-config-node
+```
+
+### Minimal Setup
+
+Create `eslint.config.mjs`:
+
+```javascript
+import { baseConfig } from "@rachelallyson/eslint-config-node";
+
+export default [...baseConfig];
+```
+
+See [Quickstart Guide](./guides/quickstart.mdx) for detailed setup.
+
+## Documentation Structure
+
+### Concepts
+
+- [**concepts.mdx**](./concepts.mdx) - Core mental models, config composition, TypeScript integration
+
+### Guides (Task-Oriented)
+
+- [**quickstart.mdx**](./guides/quickstart.mdx) - Complete setup guide
+- [**error-handling.mdx**](./guides/error-handling.mdx) - Understanding ESLint errors and rule overrides
+- [**custom-rules.mdx**](./guides/custom-rules.mdx) - Extending configs with project-specific rules
+
+### Reference
+
+- [**config.mdx**](./reference/config.mdx) - All configuration options and defaults
+- [**api/README.mdx**](./api/README.mdx) - Complete API documentation
+
+### Recipes
+
+- [**examples.mdx**](./recipes/examples.mdx) - Copy-paste solutions for common scenarios
+
+### Troubleshooting
+
+- [**troubleshooting.mdx**](./troubleshooting.mdx) - Common errors and fixes
+
+### Development
+
+- [**../CONTRIBUTING.md**](../CONTRIBUTING.md) - How to contribute
+
+## Package Architecture
+
+This package uses ESLint 9+ flat config format. Each config is a named export that returns an array of configuration objects, which can be spread into your main ESLint config.
+
+### Modular Design
+
+Pick only what you need:
+
+```javascript
+import { baseConfig, tsConfig } from "@rachelallyson/eslint-config-node";
+```
+
+Or use all configs:
+
+```javascript
+import config from "@rachelallyson/eslint-config-node";
+```
+
+## Common Tasks
+
+- [Set up a new project](./guides/quickstart.mdx)
+- [Add TypeScript support](./recipes/examples.mdx#typescript-only-setup)
+- [Override specific rules](./guides/custom-rules.mdx)
+- [Troubleshoot ESLint errors](./troubleshooting.mdx)
+
+## For AI Assistants
+
+See [llm-context.mdx](./llm-context.mdx) for a concise reference map.

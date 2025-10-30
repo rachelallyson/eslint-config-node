@@ -1,133 +1,154 @@
-# Repository Rules for AI Assistants
+# Repository Rules
 
-## Always Read First
+## Always Read These Files First
 
-Before generating code or making changes, read these files in order:
+Before generating code, always read:
 
-1. **docs/llm-context.md** - Quick reference map
-2. **docs/index.md** - Documentation entry point
-3. **docs/reference/config.md** - All configuration options
-4. **index.js** - Source of truth for public API
+- `docs/content/llm-context.mdx` - AI reference map
+- `docs/content/index.mdx` - Main documentation entry point
+- `docs/content/reference/config.mdx` - All configuration options
+- `index.js` - Public exports (main entry point)
+
+## Package Architecture
+
+- **ESLint 9+ flat config format only** - No legacy `.eslintrc` support
+- **Modular design** - Each config is a separate export that can be imported individually
+- **Node.js focused** - Not for browser/React projects
+- **ES modules only** - No CommonJS support
 
 ## Public API Surface
 
-The public API is defined in `index.js`. Always prefer public exports:
+**Named Exports** (from `index.js`):
 
-- ✅ `import { baseConfig } from "@rachelallyson/eslint-config-node"`
-- ✅ `import config from "@rachelallyson/eslint-config-node"`
-- ✅ Deep imports: `import { baseConfig } from "@rachelallyson/eslint-config-node/base"`
-- ❌ **Never** deep import from `configs/` directly (not part of public API)
+- `baseConfig` - Core ESLint rules, sorting, formatting
+- `importConfig` - Import sorting and unused import detection  
+- `securityConfig` - Security and Node.js best practices
+- `graphqlConfig` - GraphQL linting
+- `prettierConfig` - Prettier integration
+- `tsConfig` - TypeScript linting
 
-## Configuration Rules
+**Default Export**: Array combining all configs in order
 
-### Never Invent Configuration Keys
+**Deep Imports**: `/base`, `/import`, `/security`, `/graphql`, `/prettier`, `/ts`
 
-Only use configuration options documented in:
+## Code Generation Rules
 
-- `docs/reference/config.md`
-- Package `exports` in `package.json`
-
-If a configuration option doesn't exist, it cannot be used. Document new configs first.
-
-### ESLint Flat Config Format
-
-All configs return arrays of configuration objects:
+### Always Use Public Exports
 
 ```javascript
-// ✅ Correct - array spread
-export default [...baseConfig, { rules: {...} }];
+// ✅ Correct - use public exports
+import { baseConfig } from "@rachelallyson/eslint-config-node";
 
-// ❌ Wrong - treating as object
-export default { ...baseConfig, rules: {...} };
+// ❌ Wrong - deep import from configs/
+import { baseConfig } from "@rachelallyson/eslint-config-node/configs/base.js";
 ```
 
-## TypeScript Integration
+### Configuration Patterns
 
-### tsconfig.json Discovery
+```javascript
+// ✅ Correct - spread configs and override
+export default [
+  ...baseConfig,
+  {
+    rules: {
+      "no-console": "error", // Override specific rule
+    },
+  },
+];
 
-The `tsConfig` uses `projectService: true`, which:
+// ❌ Wrong - don't modify configs directly
+const modified = baseConfig.map(config => ({
+  ...config,
+  rules: { ...config.rules, "no-console": "error" }
+}));
+```
 
-- Automatically finds the consuming project's `tsconfig.json`
-- Never reads from the package directory
-- Always respects project root configuration
+### TypeScript Integration
 
-**Invariant**: TypeScript config always reads from consuming project root.
+- `tsConfig` uses `projectService: true` - automatically finds project's `tsconfig.json`
+- TypeScript is optional peer dependency - only required if using `tsConfig`
+- Don't assume TypeScript is available
 
-## Dependency Rules
+### GraphQL Configuration
+
+- `graphqlConfig` requires schema override (defaults to localhost:4000)
+- Always show users how to override the schema URL
+
+## Documentation Rules
+
+### Source of Truth
+
+- **Documentation content**: `docs/content/` directory (committed to git)
+- **Documentation site**: `docs/` directory (Nextra infrastructure)
+- **API docs**: Auto-generated from TypeScript source (if applicable)
+
+### File Types
+
+- **Human-written docs**: Use `.mdx` files in `docs/content/`
+- **API docs**: Auto-generated `.md` files in `docs/content/api/` (committed)
+- **Nextra reads both**: Can read both `.md` and `.mdx` files
+
+### Documentation Workflow
+
+- Edit `.mdx` files directly in `docs/content/`
+- No conversion needed - Nextra reads them directly
+- Preview with `npm run dev:docs` (runs from docs directory)
+- Build with `npm run build:docs`
+
+## Configuration Invariants
+
+### Always True Rules
+
+- All configs return arrays (ESLint flat config format)
+- Configs must be spread (`...configName`) when composing
+- Order matters - later configs override earlier ones
+- `baseConfig` includes default ignores: `node_modules/**`, `dist/**`
+- TypeScript config disables TS rules for `.js` files automatically
 
 ### Peer Dependencies
 
-- `eslint >= 9` - Always required
-- `typescript >= 4.8.4 < 6.0.0` - Optional, only if using `tsConfig`
-- `prettier` - Optional, only if using `prettierConfig`
+- **Required**: `eslint >= 9`
+- **Optional**: `typescript >= 4.8.4 < 6.0.0` (only for `tsConfig`)
+- **Optional**: `prettier` (only for `prettierConfig`)
 
-Never assume these are installed unless the user explicitly uses the related config.
+## Error Handling
 
-## Code Style
+### Common Issues
 
-### Config Composition
+- **Import errors**: Use ES modules, not CommonJS
+- **Peer dependency errors**: Install missing dependencies
+- **Config errors**: Use flat config format, not legacy
+- **TypeScript errors**: Ensure `tsconfig.json` exists in project root
 
-Always spread configs first, then add overrides:
+### Debugging
 
-```javascript
-// ✅ Good
-export default [
-  ...baseConfig,
-  { rules: { "no-console": "error" } },
-];
-
-// ❌ Bad - loses baseConfig rules
-export default [
-  { rules: { "no-console": "error" } },
-];
-```
-
-### File Structure
-
-- Config files in `configs/` directory
-- Each config exports a named constant (e.g., `baseConfig`)
-- Main `index.js` re-exports all configs
-- No build step - files consumed directly
-
-## Testing Approach
-
-When uncertain about configuration behavior:
-
-1. Propose minimal test case first
-2. Document expected behavior
-3. Implement fix
-4. Verify with `npx eslint --print-config`
-
-## Database/Prisma Rules
-
-**Not applicable** - This package has no database dependencies.
-
-## Environment Variables
-
-**None** - This package reads no environment variables. No `.env` files needed.
-
-## When Editing Configs
-
-If modifying existing config files (`configs/*.js`):
-
-1. Maintain backward compatibility (don't change rule defaults without good reason)
-2. Document changes in behavior
-3. Update `docs/reference/config.md` if new options added
-4. Consider peer dependency impacts
+- Check active config: `npx eslint --print-config path/to/file.js`
+- Verify ESLint version: `npx eslint --version` (must be >= 9)
+- Check peer dependencies: `npm ls eslint typescript prettier`
 
 ## Don'ts
 
-- ❌ Don't deep import from `configs/` - use named exports or deep imports
-- ❌ Don't assume TypeScript is installed
-- ❌ Don't use CommonJS `require()` - ES modules only
-- ❌ Don't invent new config options - document first
-- ❌ Don't modify `tsconfigRootDir` in `tsConfig` - let `projectService` handle it
+- Don't invent configuration keys - only use those documented
+- Don't deep import from `configs/` directory - use public exports
+- Don't assume TypeScript is required - it's optional
+- Don't use CommonJS `require()` - package uses ES modules only
+- Don't modify configs directly - spread and override instead
+- Don't use for browser/React projects - Node.js focused only
+- Don't use with ESLint < 9 - flat config required
 
-## Package Identity
+## Testing Patterns
 
-- **Name**: `@rachelallyson/eslint-config-node`
-- **Type**: ESLint configuration (ES modules)
-- **No build step** - pure JavaScript files
-- **Main entry**: `index.js`
+When uncertain, propose tests first in **tests/** directory, then implement.
 
-When suggesting imports, always use the correct package name.
+## Database Code
+
+If touching database-related code, follow invariants in `docs/content/concepts.mdx#data-invariants`.
+
+## Documentation Updates
+
+When making changes that affect functionality:
+
+1. Update `docs/content/reference/config.mdx`
+2. Update `docs/content/recipes/examples.mdx`
+3. Update `docs/content/troubleshooting.mdx`
+4. Update `docs/content/llm-context.mdx` public surface list

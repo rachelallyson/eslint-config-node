@@ -30,6 +30,11 @@ configs/          # Individual ESLint configurations
 index.js          # Main exports (re-exports all configs)
 tsconfig.json     # Shareable TypeScript config
 package.json      # Package metadata
+docs/             # Documentation site infrastructure
+  content/        # Documentation content (.mdx files - source of truth)
+  app/            # Next.js App Router files
+  next.config.mjs # Next.js configuration
+  mdx-components.js
 ```
 
 ## Development Workflow
@@ -113,10 +118,10 @@ export default [
 
 ### 4. Update Documentation
 
-- Add to `docs/reference/config.md`
-- Add example to `docs/recipes/examples.md`
-- Update `docs/api/README.md`
-- Update `docs/llm-context.md` public surface list
+- Add to `docs/content/reference/config.mdx`
+- Add example to `docs/content/recipes/examples.mdx`
+- Update `docs/content/api/README.mdx`
+- Update `docs/content/llm-context.mdx` public surface list
 
 ### 5. Update package.json
 
@@ -146,18 +151,26 @@ export default [
 
 When changing functionality, update:
 
-1. **docs/reference/config.md** - Configuration options
-2. **docs/api/README.md** - API documentation
-3. **docs/recipes/examples.md** - Usage examples (if applicable)
-4. **docs/troubleshooting.md** - Error fixes (if applicable)
-5. **docs/llm-context.md** - Public surface list
+1. **docs/content/reference/config.mdx** - Configuration options
+2. **docs/content/api/README.mdx** - API documentation
+3. **docs/content/recipes/examples.mdx** - Usage examples (if applicable)
+4. **docs/content/troubleshooting.mdx** - Error fixes (if applicable)
+5. **docs/content/llm-context.mdx** - Public surface list
+
+### Documentation Workflow
+
+- **Edit .mdx files directly** in `docs/content/` directory
+- **Preview locally**: Run `npm run dev:docs` to start Nextra dev server (runs from `docs/` directory)
+- **Build site**: Run `npm run build:docs` to generate static site in `docs/out/`
+- **No sync needed** - Nextra reads directly from `docs/content/` directory
 
 ### Documentation Style
 
 - Use clear headings with anchors (`### Heading`)
 - Include code examples that work
-- Link between related docs
+- Link between related docs (use `.mdx` extension in links)
 - Keep examples copy-pasteable
+- All docs use `.mdx` format for Nextra compatibility
 
 ## Release Process
 
@@ -218,8 +231,25 @@ Add new securityConfig option for custom patterns
 5. Test locally
 6. Submit PR with clear description
 
+## Documentation Development
+
+### Local Preview
+
+```bash
+# Start Nextra dev server
+npm run dev:docs
+
+# Build documentation site
+npm run build:docs
+
+# Preview built site
+npm run start:docs
+```
+
+Documentation is built from `docs/content/` directory using Nextra. Edit `.mdx` files directly - no conversion needed.
+
 ## Questions?
 
-- Check [docs/index.md](docs/index.md) for documentation
-- Review [troubleshooting.md](docs/troubleshooting.md) for common issues
+- Check [docs/content/index.mdx](docs/content/index.mdx) for documentation
+- Review [troubleshooting.mdx](docs/content/troubleshooting.mdx) for common issues
 - Open an issue for bugs or feature requests

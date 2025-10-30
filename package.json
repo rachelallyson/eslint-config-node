@@ -37,7 +37,10 @@
     "homepage": "https://github.com/rachelallyson/eslint-config-node#readme",
     "scripts": {
         "prepublishOnly": "./scripts/ensure-git-tag.sh",
-        "postversion": "git push && git push --tags"
+        "postversion": "git push && git push --tags",
+        "docs:dev": "cd docs && next dev",
+        "docs:build": "cd docs && next build",
+        "docs:start": "cd docs && next start"
     },
     "peerDependencies": {
         "eslint": ">= 9",
@@ -51,19 +54,20 @@
     "author": "Kuzu Media",
     "license": "ISC",
     "dependencies": {
-        "@eslint/compat": "^1.2.4",
-        "@eslint/js": "^9.17.0",
-        "@graphql-eslint/eslint-plugin": "^4.3.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-import": "^2.31.0",
-        "eslint-plugin-n": "^17.15.0",
-        "eslint-plugin-prettier": "^5.2.1",
+        "@eslint/compat": "^1.4.1",
+        "@eslint/js": "^9.38.0",
+        "@graphql-eslint/eslint-plugin": "^4.4.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-n": "^17.23.1",
+        "eslint-plugin-prettier": "^5.5.4",
         "eslint-plugin-security": "^3.0.1",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "eslint-plugin-sort-destructure-keys": "^2.0.0",
         "eslint-plugin-sort-keys-fix": "^1.1.2",
-        "eslint-plugin-unused-imports": "^4.1.4",
-        "prettier": "^3.4.2",
-        "typescript-eslint": "^8.18.1"
-    }
+        "eslint-plugin-unused-imports": "^4.3.0",
+        "prettier": "^3.6.2",
+        "typescript-eslint": "^8.46.2"
+    },
+    "devDependencies": {}
 }
