@@ -8,6 +8,8 @@ on:
       - 'configs/**'           # Rebuild docs if source changes
       - 'index.js'             # Rebuild if main exports change
       - 'package.json'         # Rebuild if root dependencies change
+      - 'typedoc.json'         # Rebuild API docs when config changes
+      - 'src/**'               # Rebuild API docs when TS stubs change
       - '.github/workflows/**'
   workflow_dispatch:
 
@@ -34,14 +36,14 @@ jobs:
           node-version: '20'
           cache: 'npm'
       
-      # Install root dependencies (for any build tools)
+      # Install root dependencies (for TypeDoc and shared tools)
       - run: npm ci
-      
-      # Install docs dependencies separately
-      - run: cd docs && npm install
-      
-      # Build documentation site
-      - run: npm run build:docs
+
+      # Generate API docs (Markdown) into docs/content/api/
+      - run: npm run docs:api
+
+      # Install docs dependencies and build the static site
+      - run: cd docs && npm install && npm run build
       
       # Upload build output
       - uses: actions/upload-pages-artifact@v3

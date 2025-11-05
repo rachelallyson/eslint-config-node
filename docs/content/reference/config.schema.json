@@ -1,0 +1,8 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "@rachelallyson/eslint-config-node configuration schema",
+    "type": "object",
+    "description": "This package does not use runtime environment variables or user config. Schema included for completeness.",
+    "properties": {},
+    "additionalProperties": false
+}

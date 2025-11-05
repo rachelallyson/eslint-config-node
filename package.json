@@ -40,7 +40,8 @@
         "postversion": "git push && git push --tags",
         "docs:dev": "cd docs && next dev",
         "docs:build": "cd docs && next build",
-        "docs:start": "cd docs && next start"
+        "docs:start": "cd docs && next start",
+        "docs:api": "typedoc"
     },
     "peerDependencies": {
         "eslint": ">= 9",
@@ -69,5 +70,8 @@
         "prettier": "^3.6.2",
         "typescript-eslint": "^8.46.2"
     },
-    "devDependencies": {}
+    "devDependencies": {
+        "typedoc": "^0.28.14",
+        "typedoc-plugin-markdown": "^4.9.0"
+    }
 }

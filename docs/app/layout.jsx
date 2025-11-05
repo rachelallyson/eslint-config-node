@@ -17,10 +17,14 @@ const footer = <Footer>ISC License © {new Date().getFullYear()} Kuzu Media.</Fo
 function normalizePageMap(pages) {
     if (!pages || !Array.isArray(pages)) return []
     return pages.map(page => {
+        const strippedRoute = typeof page.route === 'string' ? page.route.replace(/^\/content/, '') : page.route
+        const strippedUrl = typeof page.url === 'string' ? page.url.replace(/^\/content/, '') : page.url
+        const newRoute = strippedRoute === '' ? '/' : strippedRoute
+        const newUrl = strippedUrl === '' ? '/' : strippedUrl
         const normalized = {
             ...page,
-            route: page.route?.replace(/^\/content/, '') || page.route,
-            url: page.url?.replace(/^\/content/, '') || page.url,
+            route: newRoute,
+            url: newUrl,
         }
         // Recursively normalize children if they exist
         if (page.children) {
