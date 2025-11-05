@@ -11,7 +11,8 @@
         "./import": "./configs/import.js",
         "./prettier": "./configs/prettier.js",
         "./security": "./configs/security.js",
-        "./ts": "./configs/ts.js"
+        "./ts": "./configs/ts.js",
+        "./tsconfig.json": "./tsconfig.json"
     },
     "files": [
         "index.js",
