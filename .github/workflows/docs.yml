@@ -8,8 +8,6 @@ on:
       - 'configs/**'           # Rebuild docs if source changes
       - 'index.js'             # Rebuild if main exports change
       - 'package.json'         # Rebuild if root dependencies change
-      - 'typedoc.json'         # Rebuild API docs when config changes
-      - 'src/**'               # Rebuild API docs when TS stubs change
       - '.github/workflows/**'
   workflow_dispatch:
 
