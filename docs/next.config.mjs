@@ -15,9 +15,8 @@ const nextConfig = {
   output: 'export',
   images: { unoptimized: true },
   trailingSlash: true,
-  // Set basePath for GitHub Pages deployment
-  // Replace with your repository name or set NEXT_BASE_PATH env var
-  basePath: process.env.NEXT_BASE_PATH ?? (process.env.NODE_ENV === 'production' ? '/eslint-config-node-public' : ''),
+  // Set basePath for GitHub Pages deployment - MUST match repository name exactly (lowercase)
+  basePath: process.env.NEXT_BASE_PATH ?? (process.env.NODE_ENV === 'production' ? '/eslint-config-node' : ''),
   // Explicitly set workspace root to docs directory to avoid lockfile detection issues
   // when running from project root. This ensures Next.js resolves modules correctly.
   turbopack: {
