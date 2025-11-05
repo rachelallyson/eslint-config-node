@@ -1,6 +1,6 @@
 {
     "name": "@rachelallyson/eslint-config-node",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Modular ESLint configuration for Node.js projects - pick and choose the configs you need",
     "main": "index.js",
     "type": "module",

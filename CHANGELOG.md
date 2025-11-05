@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-11-05
+
+### Fixed
+
+- Export `tsconfig.json` in package.json exports field
+- Fixes TypeScript `extends` resolution when using `@rachelallyson/eslint-config-node/tsconfig.json`
+
 ## [1.0.0] - 2025-10-29
 
 ### Added
@@ -23,5 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shareable `tsconfig.json` for extending in projects
 - Comprehensive documentation
 
-[Unreleased]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rachel-allyson/eslint-config-node/releases/tag/v1.0.0
