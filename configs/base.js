@@ -19,6 +19,7 @@ export const baseConfig = [
             "sort-keys-fix": sortKeysFix,
         },
         rules: {
+            complexity: ["error", 6],
             "no-unused-vars": "off",
             "padding-line-between-statements": [
                 "warn",
