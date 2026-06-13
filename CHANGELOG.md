@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-06-13
+
+### Changed (breaking)
+
+- **ESLint 10 support.** Peer dependency widened to `^9.0.0 || ^10.0.0`. The
+  package now installs and runs cleanly under ESLint 10.
+- **TypeScript 6 support.** Peer range widened to `>=4.8.4 <6.1.0` and
+  `typescript-eslint` bumped to `^8.61.0` (which supports TS 6).
+- Replaced the unmaintained `eslint-plugin-sort-keys-fix` with
+  `eslint-plugin-perfectionist`. Object-key sorting is now enforced by
+  `perfectionist/sort-objects` (natural, ascending, case-insensitive — same
+  behaviour, still autofixable). The old plugin crashed on ESLint 10 because it
+  called the removed `context.getSourceCode()` API.
+- Bumped `@eslint/js` → `^10.0.1`, `@eslint/compat` → `^2.1.0`,
+  `eslint-plugin-n` → `^18.1.0`, `eslint-plugin-security` → `^4.0.1`,
+  `eslint-plugin-simple-import-sort` → `^13.0.0`,
+  `eslint-plugin-sort-destructure-keys` → `^3.0.0`,
+  `eslint-plugin-unused-imports` → `^4.4.1`, `eslint-plugin-prettier` → `^5.5.6`.
+
+### Removed
+
+- Dropped `eslint-plugin-import` from `importConfig`. It was registered as a
+  plugin but no `import/*` rule was enabled, and its peer range did not cover
+  ESLint 10.
+
 ## [1.0.1] - 2025-11-05
 
 ### Fixed
@@ -30,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shareable `tsconfig.json` for extending in projects
 - Comprehensive documentation
 
-[Unreleased]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/rachel-allyson/eslint-config-node/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/rachel-allyson/eslint-config-node/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/rachel-allyson/eslint-config-node/releases/tag/v1.0.0

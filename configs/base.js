@@ -1,6 +1,6 @@
 import eslint from "@eslint/js";
+import perfectionist from "eslint-plugin-perfectionist";
 import sortDestructureKeys from "eslint-plugin-sort-destructure-keys";
-import sortKeysFix from "eslint-plugin-sort-keys-fix";
 
 export const baseConfig = [
     {
@@ -15,8 +15,8 @@ export const baseConfig = [
             },
         },
         plugins: {
+            perfectionist,
             "sort-destructure-keys": sortDestructureKeys,
-            "sort-keys-fix": sortKeysFix,
         },
         rules: {
             complexity: ["error", 6],
@@ -31,13 +31,16 @@ export const baseConfig = [
                     prev: ["const", "let", "var"],
                 },
             ],
+            // Autofix-enabled object-key sorting. Replaces the unmaintained
+            // eslint-plugin-sort-keys-fix, which broke on ESLint 10 (it called
+            // the removed context.getSourceCode API). These options preserve the
+            // previous behaviour: natural, ascending, case-insensitive.
+            "perfectionist/sort-objects": [
+                "error",
+                { ignoreCase: true, order: "asc", type: "natural" },
+            ],
             "prefer-template": "error",
             "sort-destructure-keys/sort-destructure-keys": 2,
-            "sort-keys-fix/sort-keys-fix": [
-                "error",
-                "asc",
-                { caseSensitive: false, natural: true },
-            ],
         },
     },
 ];

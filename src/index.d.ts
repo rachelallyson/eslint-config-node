@@ -66,7 +66,7 @@ export declare const baseConfig: ESLintFlatConfig;
  *
  * @category Configs
  * @remarks
- * Combines \`simple-import-sort\`, \`eslint-plugin-import\`, and \`eslint-plugin-unused-imports\`.
+ * Combines \`simple-import-sort\` and \`eslint-plugin-unused-imports\`.
  * Encourages consistent grouping and removes unused imports/variables (with `_` ignore prefix).
  *
  * When to use:

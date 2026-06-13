@@ -1,6 +1,6 @@
 {
     "name": "@rachelallyson/eslint-config-node",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "description": "Modular ESLint configuration for Node.js projects - pick and choose the configs you need",
     "main": "index.js",
     "type": "module",
@@ -45,8 +45,8 @@
         "docs:api": "typedoc"
     },
     "peerDependencies": {
-        "eslint": ">= 9",
-        "typescript": ">=4.8.4 <6.0.0"
+        "eslint": "^9.0.0 || ^10.0.0",
+        "typescript": ">=4.8.4 <6.1.0"
     },
     "peerDependenciesMeta": {
         "typescript": {
@@ -56,22 +56,22 @@
     "author": "Kuzu Media",
     "license": "ISC",
     "dependencies": {
-        "@eslint/compat": "^1.4.1",
-        "@eslint/js": "^9.38.0",
+        "@eslint/compat": "^2.1.0",
+        "@eslint/js": "^10.0.1",
         "@graphql-eslint/eslint-plugin": "^4.4.0",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-n": "^17.23.1",
-        "eslint-plugin-prettier": "^5.5.4",
-        "eslint-plugin-security": "^3.0.1",
-        "eslint-plugin-simple-import-sort": "^12.1.1",
-        "eslint-plugin-sort-destructure-keys": "^2.0.0",
-        "eslint-plugin-sort-keys-fix": "^1.1.2",
-        "eslint-plugin-unused-imports": "^4.3.0",
+        "eslint-plugin-n": "^18.1.0",
+        "eslint-plugin-perfectionist": "^5.9.0",
+        "eslint-plugin-prettier": "^5.5.6",
+        "eslint-plugin-security": "^4.0.1",
+        "eslint-plugin-simple-import-sort": "^13.0.0",
+        "eslint-plugin-sort-destructure-keys": "^3.0.0",
+        "eslint-plugin-unused-imports": "^4.4.1",
         "prettier": "^3.6.2",
-        "typescript-eslint": "^8.46.2"
+        "typescript-eslint": "^8.61.0"
     },
     "devDependencies": {
+        "eslint": "^10.5.0",
         "typedoc": "^0.28.14",
         "typedoc-plugin-markdown": "^4.9.0"
     }
