@@ -56,3 +56,6 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# npm pack artifacts
+*.tgz

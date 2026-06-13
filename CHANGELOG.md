@@ -15,11 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   package now installs and runs cleanly under ESLint 10.
 - **TypeScript 6 support.** Peer range widened to `>=4.8.4 <6.1.0` and
   `typescript-eslint` bumped to `^8.61.0` (which supports TS 6).
-- Replaced the unmaintained `eslint-plugin-sort-keys-fix` with
-  `eslint-plugin-perfectionist`. Object-key sorting is now enforced by
-  `perfectionist/sort-objects` (natural, ascending, case-insensitive — same
-  behaviour, still autofixable). The old plugin crashed on ESLint 10 because it
-  called the removed `context.getSourceCode()` API.
+- Replaced the unmaintained `eslint-plugin-sort-keys-fix` **and**
+  `eslint-plugin-sort-destructure-keys` with a single `eslint-plugin-perfectionist`
+  rule. `perfectionist/sort-objects` (natural, ascending, case-insensitive,
+  autofixable) now sorts both object literals and destructuring patterns. This
+  also removes the case-sensitivity conflict the two old rules had (sort-keys-fix
+  was case-insensitive, sort-destructure-keys case-sensitive), which produced
+  un-autofixable errors on mixed-case keys. The old sort-keys-fix crashed on
+  ESLint 10 because it called the removed `context.getSourceCode()` API.
 - Bumped `@eslint/js` → `^10.0.1`, `@eslint/compat` → `^2.1.0`,
   `eslint-plugin-n` → `^18.1.0`, `eslint-plugin-security` → `^4.0.1`,
   `eslint-plugin-simple-import-sort` → `^13.0.0`,
@@ -31,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dropped `eslint-plugin-import` from `importConfig`. It was registered as a
   plugin but no `import/*` rule was enabled, and its peer range did not cover
   ESLint 10.
+- Dropped `eslint-plugin-sort-destructure-keys`; destructuring sorting is now
+  handled by `perfectionist/sort-objects` (see above).
 
 ## [1.0.1] - 2025-11-05
 
